@@ -2,7 +2,6 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
-import morgan from 'morgan';
 import dotenv from 'dotenv';
 import path from 'path';
 
@@ -16,11 +15,9 @@ app.use(cors()); // Handle CORS
 app.use(helmet()); // Secure HTTP headers
 app.use(compression()); // Compress responses
 app.use(express.json()); // JSON Parser
-app.use(express.urlencoded({ extended: true })); // URL-encoded Parser
-app.use(morgan('combined')); // Logging
+app.use(express.urlencoded({ extended: true })); 
 
 // Import and use routes
-
 
 
 export default app;
