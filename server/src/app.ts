@@ -15,10 +15,12 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const app: Application = express();
 
 // Middlewares
-app.use(cors()); // Handle CORS
-app.use(helmet()); // Secure HTTP headers
-app.use(compression()); // Compress responses
-app.use(express.json()); // JSON Parser
+app.use(cors({
+    origin:process.env.CORS_ORIGIN
+})); 
+app.use(helmet()); 
+app.use(compression()); 
+app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 
 // Import and use routes
