@@ -10,6 +10,8 @@ interface IUser extends Document {
   avatar:string
   resetPasswordToken?: string | null;
   resetPasswordExpires?: Date | null;
+  generatePasswordResetToken : ()=>string
+  isPasswordValid :()=> boolean
 }
 
 const userSchema: Schema = new Schema<IUser>(
@@ -68,7 +70,7 @@ userSchema.methods.isPasswordValid =async function (this: IUser, password: strin
   return bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.generatePasswordResetToken =async function() {
+userSchema.methods.generatePasswordResetToken = async function() {
   const resetToken = crypto.randomBytes(32).toString('hex');
   this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
   this.resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000);
