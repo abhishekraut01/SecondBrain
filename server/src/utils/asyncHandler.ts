@@ -6,5 +6,3 @@ const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => P
     };
 
 export default asyncHandler;
-
-

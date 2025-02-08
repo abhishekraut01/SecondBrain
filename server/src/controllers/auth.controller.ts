@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/user.model';
 import crypto from 'crypto';
-import asyncHandler from '../utils/AsyncHandler';
+import asyncHandler from '../utils/asyncHandler';
 import bcrypt from 'bcryptjs';
 import {
   requestResetPasswordSchema,
@@ -61,7 +61,6 @@ export const requestPasswordReset = asyncHandler(
 export const resetPassword = asyncHandler(
   async (req: Request, res: Response) => {
     const validationResult = ResetPasswordSchema.safeParse(req.body);
-
     if (!validationResult.success) {
       throw new ApiError(
         400,
@@ -72,33 +71,34 @@ export const resetPassword = asyncHandler(
 
     const { token } = req.params;
     const { password } = validationResult.data;
-    if (typeof token !== 'string') {
+
+    if (!token || typeof token !== 'string') {
       throw new ApiError(400, 'Invalid token');
     }
 
-    const hashToken = crypto.createHash('sha256').update(token).digest('hex');
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
     const user = await User.findOne({
-      resetPasswordToken: hashToken,
+      resetPasswordToken: hashedToken,
       resetPasswordExpires: { $gt: new Date() },
     });
 
     if (!user) {
-      throw new ApiError(400, 'Invalid or expired toke');
+      throw new ApiError(400, 'Invalid or expired token');
     }
 
-    // Hash and update password
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
+    user.password = password; // Will be hashed by pre-save middleware
     user.resetPasswordToken = null;
     user.resetPasswordExpires = null;
 
     await user.save();
 
-    res.status(200).json(
-      new ApiResponse(200, 'password reset successfully', {
-        user: user.username,
-      })
-    );
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, 'Password reset successfully', {
+          user: user.username,
+        })
+      );
   }
 );

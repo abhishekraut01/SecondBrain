@@ -1,10 +1,9 @@
-import express, { Application } from 'express';
+import express, { Application ,Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import dotenv from 'dotenv';
 import path from 'path';
-import { Request, Response, NextFunction } from 'express';
 import errorHandler from './middlewares/globelErrorhandler';
 import ApiError from './utils/ApiError';
 

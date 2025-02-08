@@ -37,7 +37,7 @@ const userSchema: Schema = new Schema<IUser>(
     password: {
       type: String,
       required: true,
-      minlength: 8, // Example of password validation for minimum length
+      minlength: 8, 
     },
     resetPasswordToken: {
       type: String,
