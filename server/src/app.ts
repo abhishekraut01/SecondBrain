@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import dotenv from 'dotenv';
 import path from 'path';
-import errorHandler from './middlewares/globelErrorhandler';
+import errorHandler from './middlewares/globelErrorhandler.middleware';
 import ApiError from './utils/ApiError';
 
 
@@ -23,8 +23,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Import and use routes
+import authRoute from './routes/auth.routes'
 
-
+app.use('/api/v1/auth' , authRoute)
 
 // 404 Handler
 app.use((req: Request, res: Response, next: NextFunction) => {

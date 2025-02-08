@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import {
   requestResetPasswordSchema,
   ResetPasswordSchema,
+  signUpvalidationSchema,
 } from '../validation/validationSchema';
 import ApiError from '../utils/ApiError';
 import sendEmail from '../utils/sendEmail';
@@ -93,12 +94,40 @@ export const resetPassword = asyncHandler(
 
     await user.save();
 
-    res
-      .status(200)
-      .json(
-        new ApiResponse(200, 'Password reset successfully', {
-          user: user.username,
-        })
-      );
+    res.status(200).json(
+      new ApiResponse(200, 'Password reset successfully', {
+        user: user.username,
+      })
+    );
   }
 );
+
+export const userSignUp = asyncHandler(async (req: Request, res: Response) => {
+  const validationResult =  signUpvalidationSchema.safeParse(req.body)
+
+  //step -1 check for user input validation
+  if(!validationResult.success){
+    throw new ApiError(
+      400,
+      "Invalid User Input Schema",
+      validationResult.error.errors
+    )
+  }
+
+  const {username , email , password} = validationResult.data
+
+  //step 2 - check that if user already exist or not
+
+  const isUserExist = await User.findOne({
+    $or:[{username},{email}]
+  })
+
+  if(isUserExist){
+    throw new ApiError(409 , "User already exist")
+  }
+
+  // Step 3: Handle avatar and cover image file uploads
+
+  
+
+});
