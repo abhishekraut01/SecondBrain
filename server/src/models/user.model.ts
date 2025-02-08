@@ -1,8 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import jwt, { JwtPayload, Secret } from 'jsonwebtoken'
-import { string } from 'zod';
+import jwt from 'jsonwebtoken'
 
 interface IUser extends Document {
   username: string;
@@ -13,8 +12,8 @@ interface IUser extends Document {
   resetPasswordToken?: string | null;
   resetPasswordExpires?: Date | null;
   generatePasswordResetToken : ()=>string;
-  generateRefreshToken : () =>JwtPayload;
-  generateAccessToken : () =>JwtPayload;
+  generateRefreshToken : () =>string;
+  generateAccessToken : () =>string;
   isPasswordValid(password: string): Promise<boolean>;
 }
 
@@ -76,37 +75,35 @@ userSchema.methods.isPasswordValid = async function (password: string): Promise<
   return await bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.generateRefreshToken = function (): JwtPayload {
-  const secret = process.env.REFRESH_TOKEN_SECRET as Secret;
+userSchema.methods.generateRefreshToken = function () {
+  const secret = process.env.REFRESH_TOKEN_SECRET ;
   if (!secret) {
     throw new Error("REFRESH_TOKEN_SECRET is not defined in environment variables");
   }
 
   return jwt.sign(
     {
-      _id: this._id.toString(),
+      _id: this._id,
       username: this.username,
       email: this.email,
     },
     secret,
-    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "7d" }
+    { expiresIn: '7d' }
   );
 };
 
-userSchema.methods.generateAccessToken = function (): JwtPayload {
-  const secret = process.env.ACCESS_TOKEN_SECRET as Secret;
+userSchema.methods.generateAccessToken = function () {
+  const secret = process.env.ACCESS_TOKEN_SECRET ;
   if (!secret) {
     throw new Error("ACCESS_TOKEN_SECRET is not defined in environment variables");
   }
 
   return jwt.sign(
     {
-      _id: this._id.toString(),
-      username: this.username,
-      email: this.email,
+      _id: this._id,
     },
     secret,
-    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "7d" }
+    { expiresIn: "1d" }
   );
 };
 

@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import User from '../models/user.model';
 import crypto from 'crypto';
 import asyncHandler from '../utils/asyncHandler';
-import bcrypt from 'bcryptjs';
 import {
   loginValidationSchema,
   requestResetPasswordSchema,
@@ -13,6 +12,28 @@ import ApiError from '../utils/ApiError';
 import sendEmail from '../utils/sendEmail';
 import ApiResponse from '../utils/ApiResponse';
 import uploadOnCloudinary from '../utils/Cloudinary';
+import { ObjectId } from 'mongoose';
+
+const generateAccessAndRefreshToken = async (
+  _id: ObjectId
+): Promise<{ accessToken: string; refreshToken: string }> => {
+  try {
+    const user = await User.findById(_id);
+    if (!user) {
+      throw new ApiError(404, 'User not found');
+    }
+
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+    user.refreshToken = refreshToken;
+
+    await user.save({ validateBeforeSave: false });
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(500, 'Error while generating access and refresh token');
+  }
+};
 
 export const requestPasswordReset = asyncHandler(
   async (req: Request, res: Response) => {
@@ -189,7 +210,7 @@ const userLogin = asyncHandler(async (req: Request, res: Response) => {
 
   // Step 2: Check if user exists in the database
   const userExist = await User.findOne({
-    email
+    email,
   });
 
   if (!userExist) {
@@ -197,11 +218,54 @@ const userLogin = asyncHandler(async (req: Request, res: Response) => {
   }
 
   // Step 3: Check if the password is correct
-  const isPasswordCorrect:boolean = await userExist.isPasswordValid(password);
+  const isPasswordCorrect: boolean = await userExist.isPasswordValid(password);
 
   if (!isPasswordCorrect) {
-    throw new ApiError(401,'Password is incorrect');
+    throw new ApiError(401, 'Password is incorrect');
   }
 
-  
+  // Step 4 : generate access and refresh tokens
+
+  const tokenResult = await generateAccessAndRefreshToken(
+    userExist._id as ObjectId
+  );
+
+  const { accessToken, refreshToken } = tokenResult;
+
+  const userResponse = await User.findById(userExist._id).select(
+    '-password -refreshToken'
+  );
+
+  if (!userResponse) {
+    throw new ApiError(500, 'Error while fetching user data');
+  }
+
+  interface Ioptions {
+    secure: boolean;
+    httpOnly: boolean;
+    sameSite?: 'strict' | 'lax' | 'none';
+}
+
+  const options:Ioptions = {
+    secure: true,
+    httpOnly: true,
+    sameSite: 'strict',
+  };
+
+  // Step 6: Return response
+  res
+    .status(200)
+    .cookie('accessToken', accessToken, options)
+    .cookie('refreshToken', refreshToken, options)
+    .json(
+      new ApiResponse(200, 'Login successful', {
+        accessToken,
+        refreshToken,
+        user: userResponse.toObject({
+          getters: true,
+          virtuals: false,
+          versionKey: false,
+        }),
+      })
+    );
 });
