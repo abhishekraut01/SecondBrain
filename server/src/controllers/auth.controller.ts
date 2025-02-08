@@ -1,7 +1,12 @@
-import { Request, Response } from 'express';
+import { Request, Response ,CookieOptions } from 'express';
 import User from '../models/user.model';
 import crypto from 'crypto';
 import asyncHandler from '../utils/asyncHandler';
+export interface CustomRequest extends Request {
+  user?: {
+    _id: string | ObjectId;
+  };
+}
 import {
   loginValidationSchema,
   requestResetPasswordSchema,
@@ -268,4 +273,34 @@ const userLogin = asyncHandler(async (req: Request, res: Response) => {
         }),
       })
     );
+});
+
+export const userLogout = asyncHandler(async (req: CustomRequest, res: Response) => {
+  const UserId: string | ObjectId | undefined = req.user?._id;
+
+  if (!UserId) {
+    return res.status(400).json(new ApiResponse(400, "User ID not found", {}));
+  }
+
+  await User.findByIdAndUpdate(
+    UserId,
+    {
+      $set: {
+        refreshToken: null,
+      },
+    },
+    { new: true }
+  );
+
+  const options: CookieOptions = {
+    secure: true,
+    httpOnly: true,
+    sameSite: "strict",
+  };
+
+  res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, "User Logged Out", {}));
 });
