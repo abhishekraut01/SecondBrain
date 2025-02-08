@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import asyncHandler from '../utils/asyncHandler';
 import bcrypt from 'bcryptjs';
 import {
+  loginValidationSchema,
   requestResetPasswordSchema,
   ResetPasswordSchema,
   signUpvalidationSchema,
@@ -104,27 +105,27 @@ export const resetPassword = asyncHandler(
 );
 
 export const userSignUp = asyncHandler(async (req: Request, res: Response) => {
-  const validationResult =  signUpvalidationSchema.safeParse(req.body)
+  const validationResult = signUpvalidationSchema.safeParse(req.body);
 
   //step -1 check for user input validation
-  if(!validationResult.success){
+  if (!validationResult.success) {
     throw new ApiError(
       400,
-      "Invalid User Input Schema",
+      'Invalid User Input Schema',
       validationResult.error.errors
-    )
+    );
   }
 
-  const {username , email , password} = validationResult.data
+  const { username, email, password } = validationResult.data;
 
   //step 2 - check that if user already exist or not
 
   const isUserExist = await User.findOne({
-    $or:[{username},{email}]
-  })
+    $or: [{ username }, { email }],
+  });
 
-  if(isUserExist){
-    throw new ApiError(409 , "User already exist")
+  if (isUserExist) {
+    throw new ApiError(409, 'User already exist');
   }
 
   // Step 3: Handle avatar and cover image file uploads
@@ -138,8 +139,8 @@ export const userSignUp = asyncHandler(async (req: Request, res: Response) => {
   //upload image to cloudinary
   const avatar = await uploadOnCloudinary(localAvatarPath);
 
-  if(!avatar){
-    throw new ApiError(500 , 'Error uploading avatar file')
+  if (!avatar) {
+    throw new ApiError(500, 'Error uploading avatar file');
   }
 
   // Step 5: Create and save the user
@@ -156,12 +157,50 @@ export const userSignUp = asyncHandler(async (req: Request, res: Response) => {
   );
 
   if (!createdUser) {
-    throw new ApiError(500 , 'Error while creating user');
+    throw new ApiError(500, 'Error while creating user');
   }
 
-   // Step 7: Return response
-   res
-   .status(201)
-   .json(new ApiResponse(201, 'User created successfully', createdUser));
+  // Step 7: Return response
+  res
+    .status(201)
+    .json(new ApiResponse(201, 'User created successfully', createdUser));
+});
 
+const userLogin = asyncHandler(async (req: Request, res: Response) => {
+  const validationResult = loginValidationSchema.safeParse(req.body);
+
+  if (!validationResult.success) {
+    throw new ApiError(
+      400,
+      'Invalid User Input Schema',
+      validationResult.error.errors
+    );
+  }
+
+  const { email, password } = validationResult.data;
+
+  if (!email) {
+    throw new ApiError(409, 'email is required');
+  }
+
+  if (!password) {
+    throw new ApiError(409, 'Password is required');
+  }
+
+  // Step 2: Check if user exists in the database
+  const userExist = await User.findOne({
+    email
+  });
+
+  if (!userExist) {
+    throw new ApiError(409, 'User does not exist. Please signup first');
+  }
+
+  // Step 3: Check if the password is correct
+  const isPasswordCorrect = await userExist.isPasswordValid(password);
+
+  if (!isPasswordCorrect) {
+    throw new ApiError(401,'Password is incorrect');
+  }
+  
 });

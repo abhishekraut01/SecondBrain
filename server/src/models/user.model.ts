@@ -11,7 +11,7 @@ interface IUser extends Document {
   resetPasswordToken?: string | null;
   resetPasswordExpires?: Date | null;
   generatePasswordResetToken : ()=>string
-  isPasswordValid :()=> boolean
+  isPasswordValid(password: string): Promise<boolean>;
 }
 
 const userSchema: Schema = new Schema<IUser>(
@@ -65,10 +65,10 @@ userSchema.pre<IUser>('save', async function (next) {
   }
 });
 
-// Validate the password
-userSchema.methods.isPasswordValid =async function (this: IUser, password: string) {
-  return bcrypt.compare(password, this.password);
+userSchema.methods.isPasswordValid = async function (password: string): Promise<boolean> {
+  return await bcrypt.compare(password, this.password);
 };
+
 
 userSchema.methods.generatePasswordResetToken = async function() {
   const resetToken = crypto.randomBytes(32).toString('hex');
