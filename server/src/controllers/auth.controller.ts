@@ -11,6 +11,7 @@ import {
 import ApiError from '../utils/ApiError';
 import sendEmail from '../utils/sendEmail';
 import ApiResponse from '../utils/ApiResponse';
+import uploadOnCloudinary from '../utils/Cloudinary';
 
 export const requestPasswordReset = asyncHandler(
   async (req: Request, res: Response) => {
@@ -128,6 +129,14 @@ export const userSignUp = asyncHandler(async (req: Request, res: Response) => {
 
   // Step 3: Handle avatar and cover image file uploads
 
-  
+  const localAvatarPath = req.file?.path;
+
+  if (!localAvatarPath) {
+    throw new ApiError(400, 'Avatar file is required');
+  }
+
+  //upload image to cloudinary
+  const avatar = await uploadOnCloudinary(localAvatarPath);
+
 
 });

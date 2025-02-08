@@ -4,6 +4,7 @@ import {
   resetPassword,
   userSignUp,
 } from '../controllers/auth.controller';
+import upload from '../middlewares/multer.middleware';
 
 const router = express.Router();
 
@@ -12,10 +13,11 @@ router.route('/request-password-reset').post(requestPasswordReset);
 router.route('/reset-password/:token').post(resetPassword);
 
 //user auth routes
-router.route('/register').post(userSignUp)
+router.route('/register').post(upload.single('avatar'), userSignUp);
+
+
 
 export default router;
-
 
 // POST	/api/auth/login	User login & get JWT token
 // POST	/api/auth/logout	Logout user (invalidate token)
