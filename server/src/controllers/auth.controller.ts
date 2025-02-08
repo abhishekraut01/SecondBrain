@@ -197,10 +197,11 @@ const userLogin = asyncHandler(async (req: Request, res: Response) => {
   }
 
   // Step 3: Check if the password is correct
-  const isPasswordCorrect = await userExist.isPasswordValid(password);
+  const isPasswordCorrect:boolean = await userExist.isPasswordValid(password);
 
   if (!isPasswordCorrect) {
     throw new ApiError(401,'Password is incorrect');
   }
+
   
 });
