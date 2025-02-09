@@ -1,12 +1,14 @@
-import { Request, Response ,CookieOptions } from 'express';
+import { Request, Response, CookieOptions } from 'express';
 import User from '../models/user.model';
 import crypto from 'crypto';
 import asyncHandler from '../utils/asyncHandler';
+
 export interface CustomRequest extends Request {
   user?: {
     _id: string | ObjectId;
   };
 }
+
 import {
   loginValidationSchema,
   requestResetPasswordSchema,
@@ -192,7 +194,7 @@ export const userSignUp = asyncHandler(async (req: Request, res: Response) => {
     .json(new ApiResponse(201, 'User created successfully', createdUser));
 });
 
-const userLogin = asyncHandler(async (req: Request, res: Response) => {
+export const userLogin = asyncHandler(async (req: Request, res: Response) => {
   const validationResult = loginValidationSchema.safeParse(req.body);
 
   if (!validationResult.success) {
@@ -249,16 +251,16 @@ const userLogin = asyncHandler(async (req: Request, res: Response) => {
     secure: boolean;
     httpOnly: boolean;
     sameSite?: 'strict' | 'lax' | 'none';
-}
+  }
 
-  const options:Ioptions = {
+  const options: Ioptions = {
     secure: true,
     httpOnly: true,
     sameSite: 'strict',
   };
 
   // Step 6: Return response
-  res
+  return res
     .status(200)
     .cookie('accessToken', accessToken, options)
     .cookie('refreshToken', refreshToken, options)
@@ -275,32 +277,58 @@ const userLogin = asyncHandler(async (req: Request, res: Response) => {
     );
 });
 
-export const userLogout = asyncHandler(async (req: CustomRequest, res: Response) => {
-  const UserId: string | ObjectId | undefined = req.user?._id;
+export const userLogout = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const UserId: string | ObjectId | undefined = req.user?._id;
 
-  if (!UserId) {
-    return res.status(400).json(new ApiResponse(400, "User ID not found", {}));
-  }
+    if (!UserId) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, 'User ID not found', {}));
+    }
 
-  await User.findByIdAndUpdate(
-    UserId,
-    {
-      $set: {
-        refreshToken: null,
+    await User.findByIdAndUpdate(
+      UserId,
+      {
+        $set: {
+          refreshToken: null,
+        },
       },
-    },
-    { new: true }
-  );
+      { new: true }
+    );
 
-  const options: CookieOptions = {
-    secure: true,
-    httpOnly: true,
-    sameSite: "strict",
-  };
+    const options: CookieOptions = {
+      secure: true,
+      httpOnly: true,
+      sameSite: 'strict',
+    };
 
-  res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, "User Logged Out", {}));
-});
+    return res
+      .status(200)
+      .clearCookie('accessToken', options)
+      .clearCookie('refreshToken', options)
+      .json(new ApiResponse(200, 'User Logged Out', {}));
+  }
+);
+
+export const getUserDetails = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const userId = req.user?._id?.toString(); // Ensure a valid string ID
+
+    if (!userId) {
+      return res.status(400).json(new ApiResponse(400, 'User ID not found'));
+    }
+
+    const user = await User.findById(userId).select(
+      '-password -resetPasswordToken -resetPasswordExpires -refreshToken'
+    );
+
+    if (!user) {
+      return res.status(404).json(new ApiResponse(404, 'User not found'));
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, 'User data fetched successfully', user));
+  }
+);
