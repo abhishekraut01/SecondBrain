@@ -1,14 +1,19 @@
-import { Router } from "express";
-import authMiddleware from "../middlewares/auth.middleware";
-const router = Router()
+import express from 'express';
+import { saveLink,  } from '../controllers/link.controller';
+import authMiddleware from '../middlewares/auth.middleware';
 
+const router = express.Router();
 
-// POST	/api/v1/link/	Save a new link
-router.route('/').post(authMiddleware)
+// Save a new link
+router.route('/').post(authMiddleware, saveLink);
 
-// GET	/api/links	Get all saved links
-// GET	/api/links/:id	Get a single link by ID
-// DELETE	/api/links/:id	Delete a link by ID
+// Get all saved links
+router.route('/').get(authMiddleware, );
 
+// Get a single link by ID
+router.route('/:id').get(authMiddleware, );
 
-export default router
+// Delete a link by ID
+router.route('/:id').delete(authMiddleware, );
+
+export default router;
