@@ -38,9 +38,23 @@ export const loginValidationSchema = Zod.object({
 });
 
 export const createContentSchema = Zod.object({
-  link:Zod.string()
-  .url("Invalid Url Formate")
-  .trim(),
-  title:Zod.string()
-  .min(3 , "Title should be more than three character long")
-})
+  link: Zod.string()
+    .url("Invalid URL format")
+    .trim(),
+    
+  title: Zod.string()
+    .min(3, "Title should be more than three characters long")
+    .max(100, "Title should not exceed 100 characters")
+    .trim(),
+
+  type: Zod.enum(["article", "video", "blog", "other"], {
+    errorMap: () => ({ message: "Type must be one of: article, video, blog, other" }),
+  }),
+
+  description: Zod.string()
+    .max(500, "Description should not exceed 500 characters")
+    .trim()
+    .optional(),
+
+  tags: Zod.array(Zod.string().trim()).optional(), // Expecting an array of tag strings
+});

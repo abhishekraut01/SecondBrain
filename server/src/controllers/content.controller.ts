@@ -1,50 +1,62 @@
 import asyncHandler from '../utils/asyncHandler';
-import { Response, Request } from 'express';
+import { Request , Response } from 'express';
 import { createContentSchema } from '../validation/validationSchema';
 import ApiError from '../utils/ApiError';
 import Content from '../models/content.model';
-import mongoose, { ObjectId } from 'mongoose';
+import { Types } from 'mongoose';
 import ApiResponse from '../utils/ApiResponse';
 
 interface CustomRequest extends Request {
   user?: {
-    _id: string | ObjectId;
+    _id: Types.ObjectId;
   };
 }
 
 export const createContent = asyncHandler(
   async (req: CustomRequest, res: Response) => {
+    // ✅ Validate request body using Zod schema
     const validationResult = createContentSchema.safeParse(req.body);
-
     if (!validationResult.success) {
-      throw new ApiError(
-        400,
-        'user input is invalid',
-        validationResult.error.errors
+      return res.status(400).json(
+        new ApiError(
+          400,
+          'Invalid user input',
+          validationResult.error.errors // More structured error messages
+        )
       );
     }
 
-    const { link, title } = validationResult.data;
+    const { link, title, type, description, tags } = validationResult.data;
+    const userId = req.user?._id;
 
-    const UserId: string | ObjectId | undefined = req.user?._id;
-
-    if (!UserId) {
-      throw new ApiError(400, 'user is not authenticated');
+    // ✅ Check if user is authenticated
+    if (!userId) {
+      return res.status(401).json(new ApiError(401, 'User is not authenticated'));
     }
 
+    // ✅ Ensure the link is unique for the user (Optional but useful)
+    const existingContent = await Content.findOne({ link, userId });
+    if (existingContent) {
+      return res.status(400).json(new ApiError(400, 'Content with this link already exists.'));
+    }
+
+    // ✅ Create new content
     const content = await Content.create({
       link,
       title,
-      tags: [],
-      userId: UserId,
+      type,
+      description,
+      tags: tags || [],
+      userId,
     });
 
     if (!content) {
-      throw new ApiError(500, 'unable to create content');
+      throw new ApiError(500, 'Unable to create content');
     }
 
+    // ✅ Return success response
     return res
-      .status(200)
-      .json(new ApiResponse(201, 'new content created', content));
+      .status(201)
+      .json(new ApiResponse(201, 'New content created successfully', content));
   }
 );
