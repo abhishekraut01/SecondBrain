@@ -58,3 +58,5 @@ export const createContentSchema = Zod.object({
 
   tags: Zod.array(Zod.string().trim()).optional(), // Expecting an array of tag strings
 });
+
+export const updateContentSchema = createContentSchema.partial();
