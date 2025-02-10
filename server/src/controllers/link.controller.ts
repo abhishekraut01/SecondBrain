@@ -30,3 +30,16 @@ export const saveLink = asyncHandler(async (req: CustomRequest, res: Response) =
 
   return res.status(201).json(new ApiResponse(201, 'Link saved successfully', newLink));
 });
+
+
+export const getAllLinks = asyncHandler(async (req: CustomRequest, res: Response) => {
+    const userId = req.user?._id;
+  
+    if (!userId) {
+      throw new ApiError(401, 'User is not authenticated');
+    }
+  
+    const links = await Link.find({ userId }).sort({ createdAt: -1 });
+  
+    return res.status(200).json(new ApiResponse(200, 'Links fetched successfully', links));
+  });

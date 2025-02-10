@@ -1,5 +1,5 @@
 import express from 'express';
-import { saveLink,  } from '../controllers/link.controller';
+import { getAllLinks, saveLink,  } from '../controllers/link.controller';
 import authMiddleware from '../middlewares/auth.middleware';
 
 const router = express.Router();
@@ -8,7 +8,7 @@ const router = express.Router();
 router.route('/').post(authMiddleware, saveLink);
 
 // Get all saved links
-router.route('/').get(authMiddleware, );
+router.route('/').get(authMiddleware, getAllLinks);
 
 // Get a single link by ID
 router.route('/:id').get(authMiddleware, );
