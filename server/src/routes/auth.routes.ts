@@ -8,12 +8,13 @@ import {
   userSignUp,
 } from '../controllers/auth.controller';
 import upload from '../middlewares/multer.middleware';
+import authMiddleware from '../middlewares/auth.middleware';
 
 const router = express.Router();
 
 //possword reset route
-router.route('/request-password-reset').post(requestPasswordReset);
-router.route('/reset-password/:token').post(resetPassword);
+router.route('/request-password-reset').post( authMiddleware,requestPasswordReset);
+router.route('/reset-password/:token').post(authMiddleware, resetPassword);
 
 //user auth routes
 router.route('/signup').post(upload.single('avatar'), userSignUp);
