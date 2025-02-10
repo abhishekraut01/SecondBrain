@@ -2,11 +2,11 @@ import mongoose, { Document, Schema, model, Types } from 'mongoose';
 
 interface IContent extends Document {
   link: string;
-  type: string;
+  type: 'article' | 'video' | 'blog' | 'other'; // Enum for structured data
   title: string;
   tags: Types.ObjectId[];
   userId: Types.ObjectId;
-  description:string
+  description?: string;
 }
 
 const contentSchema = new Schema<IContent>(
@@ -15,10 +15,12 @@ const contentSchema = new Schema<IContent>(
       type: String,
       required: true,
       trim: true,
+      unique: true, // Prevent duplicate links
     },
     type: {
       type: String,
       required: true,
+      enum: ['article', 'video', 'blog', 'other'], // Restrict to valid types
     },
     title: {
       type: String,
@@ -32,12 +34,14 @@ const contentSchema = new Schema<IContent>(
       {
         type: Schema.Types.ObjectId,
         ref: 'Tag',
+        default: [], // Ensure it's always an array
       },
     ],
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+      index: true, // Optimized indexing for faster queries
     },
   },
   { timestamps: true }
