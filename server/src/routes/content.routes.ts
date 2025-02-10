@@ -16,5 +16,5 @@ router.route('/content/:id').get(authMiddleware , getSingleContent)
 // PUT	/api/content/:id	Update content by ID
 router.route('/content/:id').patch(authMiddleware , updateContent)
 
-
 // DELETE	/api/content/:id	Delete content by ID
+router.route('/content/:id').delete(authMiddleware , deleteContent)

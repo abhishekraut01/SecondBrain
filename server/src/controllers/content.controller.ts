@@ -1,6 +1,9 @@
 import asyncHandler from '../utils/asyncHandler';
 import { Request, Response } from 'express';
-import { createContentSchema, updateContentSchema } from '../validation/validationSchema';
+import {
+  createContentSchema,
+  updateContentSchema,
+} from '../validation/validationSchema';
 import ApiError from '../utils/ApiError';
 import Content from '../models/content.model';
 import { Types } from 'mongoose';
@@ -110,42 +113,67 @@ export const getSingleContent = asyncHandler(
 );
 
 export const updateContent = asyncHandler(
-    async (req: CustomRequest, res: Response) => {
-      const userId = req.user?._id;
-      const contentId = req.params.id;
-  
-      if (!contentId) {
-        throw new ApiError(400, 'Please provide content ID');
-      }
-  
-      if (!userId) {
-        throw new ApiError(401, 'User is not authenticated');
-      }
-  
-      // Validate input using Zod
-      const validationResult = updateContentSchema.safeParse(req.body);
-      if (!validationResult.success) {
-        throw new ApiError(
-          400,
-          'Invalid user input',
-          validationResult.error.errors
-        );
-      }
-  
-      // Ensure the content exists and belongs to the user
-      const content = await Content.findOneAndUpdate(
-        { _id: contentId, userId }, // Only allow updates by the content owner
-        { $set: validationResult.data },
-        { new: true, runValidators: true } // Return updated doc & validate
-      ).populate(['userId', 'tags']);
-  
-      if (!content) {
-        throw new ApiError(404, 'Content not found or unauthorized');
-      }
-  
-      return res
-        .status(200)
-        .json(new ApiResponse(200, 'Content updated successfully', content));
+  async (req: CustomRequest, res: Response) => {
+    const userId = req.user?._id;
+    const contentId = req.params.id;
+
+    if (!contentId) {
+      throw new ApiError(400, 'Please provide content ID');
     }
-  );
-  
+
+    if (!userId) {
+      throw new ApiError(401, 'User is not authenticated');
+    }
+
+    // Validate input using Zod
+    const validationResult = updateContentSchema.safeParse(req.body);
+    if (!validationResult.success) {
+      throw new ApiError(
+        400,
+        'Invalid user input',
+        validationResult.error.errors
+      );
+    }
+
+    // Ensure the content exists and belongs to the user
+    const content = await Content.findOneAndUpdate(
+      { _id: contentId, userId }, // Only allow updates by the content owner
+      { $set: validationResult.data },
+      { new: true, runValidators: true } // Return updated doc & validate
+    ).populate(['userId', 'tags']);
+
+    if (!content) {
+      throw new ApiError(404, 'Content not found or unauthorized');
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, 'Content updated successfully', content));
+  }
+);
+
+export const deleteContent = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const userId = req.user?._id;
+    const contentId = req.params.id;
+
+    if (!contentId) {
+      throw new ApiError(400, 'Please provide content ID');
+    }
+
+    if (!userId) {
+      throw new ApiError(401, 'User is not authenticated');
+    }
+
+    // Find and delete the content only if it belongs to the user
+    const content = await Content.findOneAndDelete({ _id: contentId, userId });
+
+    if (!content) {
+      throw new ApiError(404, 'Content not found or unauthorized');
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, 'Content deleted successfully', null));
+  }
+);
