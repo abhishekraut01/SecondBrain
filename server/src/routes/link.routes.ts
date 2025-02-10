@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllLinks, getSingleLink, saveLink,  } from '../controllers/link.controller';
+import { deleteLink, getAllLinks, getSingleLink, saveLink,  } from '../controllers/link.controller';
 import authMiddleware from '../middlewares/auth.middleware';
 
 const router = express.Router();
@@ -14,6 +14,6 @@ router.route('/').get(authMiddleware, getAllLinks);
 router.route('/:id').get(authMiddleware, getSingleLink);
 
 // Delete a link by ID
-router.route('/:id').delete(authMiddleware, );
+router.route('/:id').delete(authMiddleware, deleteLink);
 
 export default router;

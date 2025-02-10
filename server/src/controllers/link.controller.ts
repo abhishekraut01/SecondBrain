@@ -34,7 +34,7 @@ export const saveLink = asyncHandler(async (req: CustomRequest, res: Response) =
     return res.status(201).json(new ApiResponse(201, 'Link saved successfully', newLink));
   });
 
-export const getAllLinks = asyncHandler(async (req: CustomRequest, res: Response) => {
+  export const getAllLinks = asyncHandler(async (req: CustomRequest, res: Response) => {
     const userId = req.user?._id;
   
     if (!userId) {
@@ -69,4 +69,23 @@ export const getAllLinks = asyncHandler(async (req: CustomRequest, res: Response
   });
 
 
- 
+  export const deleteLink = asyncHandler(async (req: CustomRequest, res: Response) => {
+    const userId = req.user?._id;
+    const { id } = req.params;
+  
+    if (!userId) {
+      throw new ApiError(401, 'User is not authenticated');
+    }
+  
+    if (!id) {
+      throw new ApiError(400, 'Link ID is required');
+    }
+  
+    const link = await Link.findOneAndDelete({ _id: id, userId });
+  
+    if (!link) {
+      throw new ApiError(404, 'Link not found');
+    }
+  
+    return res.status(200).json(new ApiResponse(200, 'Link deleted successfully'));
+  });
