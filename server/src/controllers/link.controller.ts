@@ -20,16 +20,14 @@ export const saveLink = asyncHandler(async (req: CustomRequest, res: Response) =
     if (!link) {
       throw new ApiError(400, 'Link is required');
     }
-
-    const hash = crypto.createHash('sha256').update(link).digest('hex');
   
-    const existingLink = await Link.findOne({ hash, userId });
+    const existingLink = await Link.findOne({ link , userId });
     if (existingLink) {
       throw new ApiError(400, 'This link is already saved');
     }
   
     
-    const newLink = await Link.create({ link, hash, userId });
+    const newLink = await Link.create({ link , userId });
   
     return res.status(201).json(new ApiResponse(201, 'Link saved successfully', newLink));
   });
