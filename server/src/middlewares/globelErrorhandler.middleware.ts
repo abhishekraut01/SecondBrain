@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
+import { ErrorRequestHandler } from "express";
 import ApiError from "../utils/ApiError";
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {

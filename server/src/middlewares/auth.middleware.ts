@@ -3,14 +3,12 @@ import ApiError from '../utils/ApiError';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model';
 
-declare module 'express' {
-  export interface Request {
-    user?: any;
-  }
+interface CustomRequest extends Request{
+  user?:any
 }
 
 const authMiddleware = async (
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {

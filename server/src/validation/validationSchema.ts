@@ -36,3 +36,11 @@ export const loginValidationSchema = Zod.object({
     .min(6, 'Password must be at least 6 characters')
     .max(100, 'Password cannot exceed 100 characters'),
 });
+
+export const createContentSchema = Zod.object({
+  link:Zod.string()
+  .url("Invalid Url Formate")
+  .trim(),
+  title:Zod.string()
+  .min(3 , "Title should be more than three character long")
+})
