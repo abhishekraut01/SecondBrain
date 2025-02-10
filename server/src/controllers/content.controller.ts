@@ -81,3 +81,31 @@ export const getContent = asyncHandler(
     }
   );
   
+  export const getSingleContent = asyncHandler(
+    async (req: CustomRequest, res: Response) => {
+      const userId = req.user?._id;
+      const contentId = req.params.id;
+  
+      if (!contentId) {
+        throw new ApiError(400, 'Please provide content ID'); 
+      }
+  
+      if (!userId) {
+        throw new ApiError(401, 'User is not authenticated');
+      }
+  
+      // ✅ Corrected `findById` usage
+      const content = await Content.findById(contentId).populate([
+        { path: 'userId' },
+        { path: 'tags' }
+      ]);
+  
+      if (!content) {
+        throw new ApiError(404, 'Content not found');
+      }
+  
+      return res.status(200).json(
+        new ApiResponse(200, 'Content fetched successfully', content)
+      );
+    }
+  );

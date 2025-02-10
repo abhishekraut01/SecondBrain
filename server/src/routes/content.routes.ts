@@ -1,6 +1,6 @@
 import { Router } from "express";
 import authMiddleware from "../middlewares/auth.middleware";
-import { createContent, getContent } from "../controllers/content.controller";
+import { createContent, getContent, getSingleContent } from "../controllers/content.controller";
 const router = Router()
 
 
@@ -11,5 +11,7 @@ router.route('/content').post( authMiddleware,createContent);
 router.route('/content').get(authMiddleware , getContent)
 
 // GET	/api/content/:id	Get a single content by ID
+router.route('/content/:id').get(authMiddleware , getSingleContent)
+
 // PUT	/api/content/:id	Update content by ID
 // DELETE	/api/content/:id	Delete content by ID
