@@ -44,8 +44,8 @@ export const updateUserProfile = asyncHandler(
       throw new ApiError(401, 'User is not authenticated. Please log in.');
     }
 
+    // Validate user input
     const validationResult = updateUserProfileSchema.safeParse(req.body);
-
     if (!validationResult.success) {
       throw new ApiError(
         400,
@@ -54,25 +54,27 @@ export const updateUserProfile = asyncHandler(
       );
     }
 
+    // Update user profile
     const updatedUser = await User.findByIdAndUpdate(
-      {
-        userId,
-      },
-      {
-        $set: validationResult.data,
-      },
-      {
-        new: true,
-      }
-    );
+      userId,
+      { $set: validationResult.data },
+      { new: true, runValidators: true }
+    )
+      .select(
+        '-password -resetPasswordToken -resetPasswordExpires -refreshToken'
+      )
+      .lean();
 
     if (!updatedUser) {
-      throw new ApiError(400, 'user not found or unauthorized');
+      throw new ApiError(404, 'User not found. Unable to update profile.');
     }
 
+    // Send response
     return res
       .status(200)
-      .json(new ApiResponse(200, 'Content updated successfully', updatedUser));
+      .json(
+        new ApiResponse(200, 'User profile updated successfully.', updatedUser)
+      );
   }
 );
 
