@@ -1,5 +1,13 @@
+import { Router } from "express";
+import authMiddleware from "../middlewares/auth.middleware";
+import { createTag } from "../controllers/tag.controller";
+const router = Router();
+
+
 // POST	/api/tags	Create a new tag
-// GET	/api/tags	Get all tags
-// DELETE	/api/tags/:id	Delete a tag by ID
+router.route('/').post(authMiddleware , createTag)
+
+export default router
+
 
 

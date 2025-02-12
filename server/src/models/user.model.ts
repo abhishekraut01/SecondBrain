@@ -51,7 +51,7 @@ const userSchema: Schema = new Schema<IUser>(
       default: null,
     },
     refreshToken: {
-      type: String, // Token used for managing authentication/refresh token flow
+      type: String, 
     },
   },
   { timestamps: true }

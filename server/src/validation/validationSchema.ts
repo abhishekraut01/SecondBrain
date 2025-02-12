@@ -60,3 +60,9 @@ export const createContentSchema = Zod.object({
 });
 
 export const updateContentSchema = createContentSchema.partial();
+
+export const createTagSchema = Zod.object({
+  title: Zod.string()
+    .min(3, 'Username must be at least 3 characters')
+    .max(50, 'Username cannot exceed 20 characters')
+});
