@@ -27,10 +27,12 @@ import authRoute from './routes/auth.routes'
 import contentRoute from './routes/content.routes'
 import linkRoute from './routes/content.routes'
 import tagRoutes from './routes/tag.routes'
+import userRoutes from './routes/user.routes'
 app.use('/api/v1/auth' , authRoute)
 app.use('/api/v1/content' ,contentRoute )
 app.use('/api/v1/link' ,linkRoute )
 app.use('/api/v1/tags' ,tagRoutes )
+app.use('/api/v1/user' ,userRoutes )
 
 // 404 Handler
 app.use((req: Request, res: Response, next: NextFunction) => {

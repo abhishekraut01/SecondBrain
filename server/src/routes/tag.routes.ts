@@ -4,7 +4,7 @@ import { createTag, deleteTag, getAllTags } from "../controllers/tag.controller"
 const router = Router();
 
 
-// POST	/api/tags	Create a new tag
+// ✅ Create a new tag
 router.route('/').post(authMiddleware , createTag)
 
 export default router

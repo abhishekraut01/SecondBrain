@@ -12,14 +12,14 @@ import authMiddleware from '../middlewares/auth.middleware';
 
 const router = express.Router();
 
-//possword reset route
-router.route('/request-password-reset').post( authMiddleware,requestPasswordReset);
-router.route('/reset-password/:token').post(authMiddleware, resetPassword);
+// 🔒 Password reset routes (No auth required)
+router.route('/request-password-reset').post(requestPasswordReset);
+router.route('/reset-password/:token').post(resetPassword);
 
-//user auth routes
+// 👤 User authentication routes
 router.route('/signup').post(upload.single('avatar'), userSignUp);
-router.route('/login').post(upload.single('avatar'), userLogin);
-router.route('/logout').post(upload.single('avatar'), userLogout);
-router.route('/me').post(upload.single('avatar'), getUserDetails);
+router.route('/login').post(userLogin);
+router.route('/logout').post(authMiddleware, userLogout);
+router.route('/me').get(authMiddleware, getUserDetails);
 
 export default router;
