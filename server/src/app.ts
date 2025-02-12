@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import errorHandler from './middlewares/globelErrorhandler.middleware';
 import ApiError from './utils/ApiError';
+import cookieParser from "cookie-parser";
 
 
 // Load environment variables
@@ -18,6 +19,7 @@ app.use(cors({
     origin:process.env.CORS_ORIGIN
 })); 
 app.use(helmet()); 
+app.use(cookieParser()); 
 app.use(compression()); 
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));

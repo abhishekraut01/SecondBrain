@@ -282,9 +282,7 @@ export const userLogout = asyncHandler(
     const UserId: string | ObjectId | undefined = req.user?._id;
 
     if (!UserId) {
-      return res
-        .status(400)
-        .json(new ApiResponse(400, 'User ID not found', {}));
+      throw new ApiError(401, 'User Id not found');
     }
 
     await User.findByIdAndUpdate(
