@@ -5,6 +5,8 @@ import ApiError from '../utils/ApiError';
 import User from '../models/user.model';
 import ApiResponse from '../utils/ApiResponse';
 import { updateUserProfileSchema } from '../validation/validationSchema';
+import Content from '../models/content.model';
+import Link from '../models/link.model';
 
 interface customRequest extends Request {
   user?: {
@@ -79,5 +81,28 @@ export const updateUserProfile = asyncHandler(
 );
 
 export const deleteUserProfile = asyncHandler(
-  async (req: Request, res: Response) => {}
+  async (req: customRequest, res: Response) => {
+    const userId = req.user?._id;
+
+    if (!userId) {
+      throw new ApiError(401, "User is not authenticated. Please log in.");
+    }
+
+    // Check if user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, "User not found.");
+    }
+
+    
+    await Promise.all([
+      User.findByIdAndDelete(userId), 
+      Content.deleteMany({ userId }), 
+      Link.deleteMany({ userId }), 
+    ]);
+
+    return res.status(200).json(
+      new ApiResponse(200, "User profile deleted successfully.")
+    );
+  }
 );
