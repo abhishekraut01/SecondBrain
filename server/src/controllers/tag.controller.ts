@@ -45,7 +45,7 @@ export const createTag = asyncHandler(
   }
 );
 
-// ✅ Get all tags
+
 export const getAllTags = asyncHandler(async (req: Request, res: Response) => {
   const tags = await Tag.find();
 
@@ -56,3 +56,15 @@ export const getAllTags = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json(new ApiResponse(200, 'Tags fetched successfully', tags));
 });
 
+
+export const deleteTag = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const tag = await Tag.findByIdAndDelete(id);
+
+  if (!tag) {
+    throw new ApiError(404, 'Tag not found');
+  }
+
+  res.status(200).json(new ApiResponse(200, 'Tag deleted successfully', tag));
+});
