@@ -181,7 +181,7 @@ export const userSignUp = asyncHandler(async (req: Request, res: Response) => {
 
   // Step 6: Remove sensitive fields for the response
   const createdUser = await User.findById(newUser._id).select(
-    '-password -refreshToken'
+    '-password -refreshToken -resetPasswordToken -resetPasswordExpires'
   );
 
   if (!createdUser) {
