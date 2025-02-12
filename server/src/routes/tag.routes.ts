@@ -1,6 +1,6 @@
 import { Router } from "express";
 import authMiddleware from "../middlewares/auth.middleware";
-import { createTag } from "../controllers/tag.controller";
+import { createTag, getAllTags } from "../controllers/tag.controller";
 const router = Router();
 
 
@@ -8,6 +8,9 @@ const router = Router();
 router.route('/').post(authMiddleware , createTag)
 
 export default router
+
+// ✅ Get all tags
+router.route('/').get(authMiddleware, getAllTags);
 
 
 

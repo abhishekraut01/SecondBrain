@@ -44,3 +44,15 @@ export const createTag = asyncHandler(
     res.status(201).json(new ApiResponse(201, 'New tag created', tag)); // Use 201 instead of 200
   }
 );
+
+// ✅ Get all tags
+export const getAllTags = asyncHandler(async (req: Request, res: Response) => {
+  const tags = await Tag.find();
+
+  if (!tags || tags.length === 0) {
+    throw new ApiError(404, 'No tags found');
+  }
+
+  res.status(200).json(new ApiResponse(200, 'Tags fetched successfully', tags));
+});
+
