@@ -4,6 +4,7 @@ import { ObjectId } from 'mongoose';
 import ApiError from '../utils/ApiError';
 import User from '../models/user.model';
 import ApiResponse from '../utils/ApiResponse';
+import { updateUserProfileSchema } from '../validation/validationSchema';
 
 interface customRequest extends Request {
   user?: {
@@ -20,21 +21,58 @@ export const getUserProfile = asyncHandler(
     }
 
     const user = await User.findById(userId)
-      .select("-password -resetPasswordToken -resetPasswordExpires -refreshToken")
-      .lean(); 
+      .select(
+        '-password -resetPasswordToken -resetPasswordExpires -refreshToken'
+      )
+      .lean();
 
     if (!user) {
       throw new ApiError(404, 'User not found.');
     }
 
-    res.status(200).json(new ApiResponse(200, 'User profile fetched successfully.', user));
+    res
+      .status(200)
+      .json(new ApiResponse(200, 'User profile fetched successfully.', user));
   }
 );
 
-
 export const updateUserProfile = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: customRequest, res: Response) => {
+    const userId = req.user?._id;
 
+    if (!userId) {
+      throw new ApiError(401, 'User is not authenticated. Please log in.');
+    }
+
+    const validationResult = updateUserProfileSchema.safeParse(req.body);
+
+    if (!validationResult.success) {
+      throw new ApiError(
+        400,
+        'Invalid User Input Schema',
+        validationResult.error.errors
+      );
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      {
+        userId,
+      },
+      {
+        $set: validationResult.data,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!updatedUser) {
+      throw new ApiError(400, 'user not found or unauthorized');
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, 'Content updated successfully', updatedUser));
   }
 );
 

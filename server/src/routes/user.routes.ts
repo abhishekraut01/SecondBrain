@@ -7,10 +7,10 @@ const router = Router()
 router.route('/:id').get(authMiddleware,getUserProfile)
 
 // ✅ Update user profile
-router.route('/:id').get(authMiddleware,updateUserProfile)
+router.route('/:id').patch(authMiddleware,updateUserProfile)
 
 // ✅ Delete user account
-router.route('/:id').get(authMiddleware,deleteUserProfile)
+router.route('/:id').delete(authMiddleware,deleteUserProfile)
 
 export default router
 
