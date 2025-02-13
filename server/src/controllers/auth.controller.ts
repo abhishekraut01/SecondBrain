@@ -308,25 +308,3 @@ export const userLogout = asyncHandler(
       .json(new ApiResponse(200, 'User Logged Out', {}));
   }
 );
-
-export const getUserDetails = asyncHandler(
-  async (req: CustomRequest, res: Response) => {
-    const userId = req.user?._id?.toString(); // Ensure a valid string ID
-
-    if (!userId) {
-      return res.status(400).json(new ApiResponse(400, 'User ID not found'));
-    }
-
-    const user = await User.findById(userId).select(
-      '-password -resetPasswordToken -resetPasswordExpires -refreshToken'
-    );
-
-    if (!user) {
-      return res.status(404).json(new ApiResponse(404, 'User not found'));
-    }
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, 'User data fetched successfully', user));
-  }
-);

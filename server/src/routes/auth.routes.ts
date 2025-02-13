@@ -1,6 +1,5 @@
 import express from 'express';
 import {
-  getUserDetails,
   requestPasswordReset,
   resetPassword,
   userLogin,
@@ -20,6 +19,5 @@ router.route('/reset-password/:token').post(resetPassword);
 router.route('/signup').post(upload.single('avatar'), userSignUp);
 router.route('/login').post(userLogin);
 router.route('/logout').post(authMiddleware, userLogout);
-router.route('/me').get(authMiddleware, getUserDetails);
 
 export default router;
