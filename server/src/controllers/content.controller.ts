@@ -19,7 +19,6 @@ export const createContent = asyncHandler(
   async (req: CustomRequest, res: Response) => {
     const validationResult = createContentSchema.safeParse(req.body);
     if (!validationResult.success) {
-
       throw new ApiError(
         400,
         'Invalid user input',
@@ -68,10 +67,9 @@ export const getContent = asyncHandler(
     }
 
     const content = await Content.find({ userId }).populate([
-      { path: "userId", select: "username _id email" }, 
-      { path: "tags" }, 
+      { path: 'userId', select: 'username _id email' },
+      { path: 'tags' },
     ]);
-    
 
     // If no content is found, throw a 404 error
     if (!content || content.length === 0) {
@@ -98,7 +96,7 @@ export const getSingleContent = asyncHandler(
     }
 
     const content = await Content.findById(contentId).populate([
-      { path: 'userId' , select: "username _id email" },
+      { path: 'userId', select: 'username _id email' },
       { path: 'tags' },
     ]);
 
@@ -140,7 +138,10 @@ export const updateContent = asyncHandler(
       { _id: contentId, userId }, // Only allow updates by the content owner
       { $set: validationResult.data },
       { new: true, runValidators: true } // Return updated doc & validate
-    ).populate(['userId', 'tags']);
+    ).populate([
+      { path: 'userId', select: 'username _id email' },
+      { path: 'tags' },
+    ]);
 
     if (!content) {
       throw new ApiError(404, 'Content not found or unauthorized');
