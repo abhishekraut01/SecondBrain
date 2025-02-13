@@ -10,7 +10,7 @@ router.route('/').get(authMiddleware,getUserProfile)
 router.route('/').patch(authMiddleware,updateUserProfile)
 
 // ✅ Delete user account
-router.route('/:id').delete(authMiddleware,deleteUserProfile)
+router.route('/').delete(authMiddleware,deleteUserProfile)
 
 export default router
 
