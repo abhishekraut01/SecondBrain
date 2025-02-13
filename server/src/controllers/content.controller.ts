@@ -98,7 +98,7 @@ export const getSingleContent = asyncHandler(
     }
 
     const content = await Content.findById(contentId).populate([
-      { path: 'userId' },
+      { path: 'userId' , select: "username _id email" },
       { path: 'tags' },
     ]);
 
