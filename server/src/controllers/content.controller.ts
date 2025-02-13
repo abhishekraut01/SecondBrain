@@ -67,11 +67,11 @@ export const getContent = asyncHandler(
       throw new ApiError(401, 'User is not authenticated');
     }
 
-    // Find all content documents associated with the user
     const content = await Content.find({ userId }).populate([
-      { path: 'userId' },
-      { path: 'tags' },
+      { path: "userId", select: "username _id email" }, 
+      { path: "tags" }, 
     ]);
+    
 
     // If no content is found, throw a 404 error
     if (!content || content.length === 0) {
