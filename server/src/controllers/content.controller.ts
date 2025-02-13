@@ -8,7 +8,6 @@ import ApiError from '../utils/ApiError';
 import Content from '../models/content.model';
 import { Types } from 'mongoose';
 import ApiResponse from '../utils/ApiResponse';
-import Link from '../models/link.model';
 
 interface CustomRequest extends Request {
   user?: {
@@ -20,7 +19,7 @@ export const createContent = asyncHandler(
   async (req: CustomRequest, res: Response) => {
     const validationResult = createContentSchema.safeParse(req.body);
     if (!validationResult.success) {
-      // Throwing the error allows the global error handler to catch and format it.
+
       throw new ApiError(
         400,
         'Invalid user input',
@@ -33,21 +32,6 @@ export const createContent = asyncHandler(
 
     if (!userId) {
       throw new ApiError(401, 'User is not authenticated');
-    }
-
-    const existingLink = await Link.findOne({
-      link,
-      userId,
-    });
-
-    if(existingLink){
-      throw new ApiError(400, 'Content with this link already exists.');
-    }
-
-    const newLink = await Link.create({ link, userId });
-
-    if(!newLink){
-      throw new ApiError(500, 'Unable to Save link')
     }
 
     const existingContent = await Content.findOne({ link, userId });
