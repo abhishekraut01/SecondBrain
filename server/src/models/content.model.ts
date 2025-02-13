@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema, model, Types } from 'mongoose';
 
 interface IContent extends Document {
-  link: Types.ObjectId;
+  link: String;
   type: 'article' | 'video' | 'blog' | 'other'; // Enum for structured data
   title: string;
   tags: Types.ObjectId[];
@@ -12,8 +12,7 @@ interface IContent extends Document {
 const contentSchema = new Schema<IContent>(
   {
     link: {
-      type: Schema.Types.ObjectId,
-      ref: 'Link',
+      type: String,
       required: true,
     },
     type: {

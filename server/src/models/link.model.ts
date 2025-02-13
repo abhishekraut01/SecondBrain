@@ -1,13 +1,13 @@
 import mongoose, { Schema, model, Document, Types } from 'mongoose';
 
 interface ILink extends Document {
-  link: string;
+  hash: string;
   userId: Types.ObjectId;
 }
 
 const linkSchema = new Schema<ILink>(
   {
-    link: {
+    hash: {
       type: String,
       required: true, 
       trim: true,
