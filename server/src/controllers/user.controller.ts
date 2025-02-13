@@ -85,24 +85,23 @@ export const deleteUserProfile = asyncHandler(
     const userId = req.user?._id;
 
     if (!userId) {
-      throw new ApiError(401, "User is not authenticated. Please log in.");
+      throw new ApiError(401, 'User is not authenticated. Please log in.');
     }
 
     // Check if user exists
     const user = await User.findById(userId);
     if (!user) {
-      throw new ApiError(404, "User not found.");
+      throw new ApiError(404, 'User not found.');
     }
 
-    
     await Promise.all([
-      User.findByIdAndDelete(userId), 
-      Content.deleteMany({ userId }), 
-      Link.deleteMany({ userId }), 
+      User.findByIdAndDelete(userId),
+      Content.deleteMany({ userId }),
+      Link.deleteMany({ userId }),
     ]);
 
-    return res.status(200).json(
-      new ApiResponse(200, "User profile deleted successfully.")
-    );
+    return res
+      .status(200)
+      .json(new ApiResponse(200, 'User profile deleted successfully.'));
   }
 );

@@ -4,10 +4,10 @@ import authMiddleware from "../middlewares/auth.middleware";
 const router = Router()
 
 // ✅ Get user profile by ID
-router.route('/:id').get(authMiddleware,getUserProfile)
+router.route('/').get(authMiddleware,getUserProfile)
 
 // ✅ Update user profile
-router.route('/:id').patch(authMiddleware,updateUserProfile)
+router.route('/').patch(authMiddleware,updateUserProfile)
 
 // ✅ Delete user account
 router.route('/:id').delete(authMiddleware,deleteUserProfile)
