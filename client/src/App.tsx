@@ -4,13 +4,13 @@ export default function App() {
   return (
     <>
       <Button
-        varient={"primary"}
+        variant="primary" // ✅ Fixed spelling
         size="sm"
         text="MainBTN"
         icon="+"
-        onclick={() => {
+        onClick={() => {
           console.log("hello");
-        }}
+        }} // ✅ Fixed `onclick` to `onClick`
       />
     </>
   );
