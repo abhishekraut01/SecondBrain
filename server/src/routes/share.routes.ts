@@ -12,7 +12,7 @@ router.route('/').get(authMiddleware, getAllLinks);
 
 
 // Get the brain with id
-router.route('/:id').get(authMiddleware, getPublicBrain);
+router.route('/:id').get( getPublicBrain);
 
 
 export default router;

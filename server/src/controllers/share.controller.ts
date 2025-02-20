@@ -17,7 +17,7 @@ interface CustomRequest extends Request {
  */
 export const saveLink = asyncHandler(
   async (req: CustomRequest, res: Response) => {
-    const { share } = req.body;
+    const share = req.body?.share;
     const userId = req.user?._id;
 
     if (!userId) {
@@ -31,13 +31,17 @@ export const saveLink = asyncHandler(
         throw new ApiError(404, 'No public link found');
       }
 
-      return res.status(200).json(new ApiResponse(200, 'Updated share status to private'));
+      return res
+        .status(200)
+        .json(new ApiResponse(200, 'Updated share status to private'));
     }
 
     const hashvalue = crypto.randomBytes(32).toString('hex');
-    const newLink = await Link.create({ userId, hashvalue });
+    const newLink = await Link.create({ userId, hash: hashvalue });
 
-    return res.status(201).json(new ApiResponse(201, 'Updated share status to public', newLink));
+    return res
+      .status(201)
+      .json(new ApiResponse(201, 'Updated share status to public', newLink));
   }
 );
 
@@ -54,7 +58,9 @@ export const getAllLinks = asyncHandler(
 
     const links = await Link.find({ userId }).sort({ createdAt: -1 });
 
-    return res.status(200).json(new ApiResponse(200, 'Links fetched successfully', links));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, 'Links fetched successfully', links));
   }
 );
 
@@ -69,7 +75,9 @@ export const getPublicBrain = asyncHandler(
       throw new ApiError(400, 'Link ID is required');
     }
 
-    const link = await Link.findById(id);
+    const link = await Link.findOne({
+      hash:id
+    });
 
     if (!link) {
       throw new ApiError(404, 'Link not found');
@@ -82,8 +90,10 @@ export const getPublicBrain = asyncHandler(
       throw new ApiError(404, 'Content not found');
     }
 
-    return res.status(200).json(
-      new ApiResponse(200, 'Content fetched successfully', usersBrainContent)
-    );
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, 'Content fetched successfully', usersBrainContent)
+      );
   }
 );
