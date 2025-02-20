@@ -84,7 +84,9 @@ export const getPublicBrain = asyncHandler(
     }
 
     // Fetch all content of the user who owns this public link
-    const usersBrainContent = await Content.find({ userId: link.userId });
+    const usersBrainContent = await Content.find({ userId: link.userId }).populate([
+      { path: 'userId', select: 'username _id email avatar' },
+    ]);;
 
     if (!usersBrainContent || usersBrainContent.length === 0) {
       throw new ApiError(404, 'Content not found');
