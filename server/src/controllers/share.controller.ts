@@ -4,6 +4,7 @@ import ApiError from '../utils/ApiError';
 import ApiResponse from '../utils/ApiResponse';
 import Link from '../models/link.model';
 import crypto from 'crypto';
+import Content from '../models/content.model';
 
 interface CustomRequest extends Request {
   user?: { _id: string };
@@ -56,25 +57,28 @@ export const getAllLinks = asyncHandler(
 
 export const getPublicBrain = asyncHandler(
   async (req: CustomRequest, res: Response) => {
-    const userId = req.user?._id;
     const { id } = req.params;
-
-    if (!userId) {
-      throw new ApiError(401, 'User is not authenticated');
-    }
 
     if (!id) {
       throw new ApiError(400, 'Link ID is required');
     }
 
-    const link = await Link.findOne({ _id: id, userId });
+    const link = await Link.findOne({ _id: id });
 
     if (!link) {
       throw new ApiError(404, 'Link not found');
     }
 
+    const usersBrainContent = await Content.findById({
+      _id: link.userId,
+    });
+
+    if (!usersBrainContent) {
+      throw new ApiError(404, 'Content not found');
+    }
+
     return res
       .status(200)
-      .json(new ApiResponse(200, 'Link fetched successfully', link));
+      .json(new ApiResponse(200, 'content fetched successfully', link));
   }
 );
