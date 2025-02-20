@@ -26,3 +26,4 @@ export const ShareIcon = (props:IShareIconProps) => {
     </svg>
   );
 };
+

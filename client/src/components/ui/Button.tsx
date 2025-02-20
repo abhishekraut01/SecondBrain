@@ -12,7 +12,7 @@ export interface IButton {
 
 const buttonVariants = {
   primary: "bg-purple-600 text-white ",
-  secondary: "bg-purple-300 text-purple-600 ",
+  secondary: "bg-purple-200 text-purple-600 ",
 };
 
 const sizeClasses = {
@@ -32,7 +32,7 @@ export const Button = ({
   return (
     <button
       className={clsx(
-        "rounded-md flex items-center transition-all duration-300",
+        "rounded-md flex items-center transition-all duration-300 font-light",
         buttonVariants[variant],
         sizeClasses[size],
         className
