@@ -25,7 +25,7 @@ export const saveLink = asyncHandler(
     }
 
     if (!share) {
-      const existingLink = await Link.findOneAndDelete({ userId });
+      const existingLink = await Link.deleteMany({ userId });
 
       if (!existingLink) {
         throw new ApiError(404, 'No public link found');
