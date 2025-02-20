@@ -54,8 +54,8 @@ const getEmbedComponent = (link: string | undefined, type: string) => {
   if (type === "instagram" && link.includes("instagram.com")) {
     return (
       <blockquote
-        className="instagram-media"
-        data-instgrm-permalink={link}
+        className="instagram-media w-full aspect-video rounded-md overflow-hidden"
+        data-instgrm-permalink={`${link}/?utm_source=ig_embed`}
         data-instgrm-version="14"
       ></blockquote>
     );

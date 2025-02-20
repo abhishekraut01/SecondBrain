@@ -47,7 +47,7 @@ export default function App() {
         tags={["productivity", "learning"]}
         date="08/03/2024"
         type="instagram"
-        link = "https://www.instagram.com/p/DGOdc17oNBw/?utm_source=ig_embed"
+        link = "https://www.instagram.com/p/DGLr19aMSHO"
       />
     </div>
   );
