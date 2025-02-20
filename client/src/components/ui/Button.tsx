@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import clsx from "clsx"; // Optional: Helps in managing conditional classes
+import clsx from "clsx";
 
 export interface IButton {
   variant?: "primary" | "secondary";
@@ -11,8 +11,8 @@ export interface IButton {
 }
 
 const buttonVariants = {
-  primary: "bg-purple-600 text-white hover:bg-purple-700",
-  secondary: "bg-purple-300 text-purple-600 hover:bg-purple-400",
+  primary: "bg-purple-600 text-white ",
+  secondary: "bg-purple-300 text-purple-600 ",
 };
 
 const sizeClasses = {

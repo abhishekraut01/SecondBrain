@@ -5,15 +5,15 @@ export default function App() {
   return (
     <div className="space-x-4">
       <Button variant="primary" size="sm" icon={<ShareIcon size="sm" />}>
-        Small Button
+        Small
       </Button>
 
       <Button variant="secondary" size="md" icon={<ShareIcon size="md" />}>
-        Medium Button
+        Medium
       </Button>
 
       <Button variant="secondary" size="lg" icon={<ShareIcon size="lg" />}>
-        Large Button
+        Large
       </Button>
     </div>
   );
