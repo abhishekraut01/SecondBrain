@@ -10,6 +10,11 @@ interface CustomRequest extends Request {
   user?: { _id: string };
 }
 
+/**
+ * Save or delete a public link based on the `share` status.
+ * If `share: true`, generates a unique hash link.
+ * If `share: false`, deletes the public link.
+ */
 export const saveLink = asyncHandler(
   async (req: CustomRequest, res: Response) => {
     const { share } = req.body;
@@ -20,25 +25,25 @@ export const saveLink = asyncHandler(
     }
 
     if (!share) {
-      const existingLink = await Link.deleteMany({ userId });
+      const existingLink = await Link.findOneAndDelete({ userId });
+
       if (!existingLink) {
-        throw new ApiError(404, 'brain was not public');
+        throw new ApiError(404, 'No public link found');
       }
-      return res
-        .status(200)
-        .json(new ApiResponse(200, 'updated share status to private'));
+
+      return res.status(200).json(new ApiResponse(200, 'Updated share status to private'));
     }
 
     const hashvalue = crypto.randomBytes(32).toString('hex');
-
     const newLink = await Link.create({ userId, hashvalue });
 
-    return res
-      .status(201)
-      .json(new ApiResponse(201, 'updated share status to public', newLink));
+    return res.status(201).json(new ApiResponse(201, 'Updated share status to public', newLink));
   }
 );
 
+/**
+ * Get all links of the authenticated user.
+ */
 export const getAllLinks = asyncHandler(
   async (req: CustomRequest, res: Response) => {
     const userId = req.user?._id;
@@ -49,12 +54,13 @@ export const getAllLinks = asyncHandler(
 
     const links = await Link.find({ userId }).sort({ createdAt: -1 });
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, 'Links fetched successfully', links));
+    return res.status(200).json(new ApiResponse(200, 'Links fetched successfully', links));
   }
 );
 
+/**
+ * Fetches content from a public link.
+ */
 export const getPublicBrain = asyncHandler(
   async (req: CustomRequest, res: Response) => {
     const { id } = req.params;
@@ -63,22 +69,21 @@ export const getPublicBrain = asyncHandler(
       throw new ApiError(400, 'Link ID is required');
     }
 
-    const link = await Link.findOne({ _id: id });
+    const link = await Link.findById(id);
 
     if (!link) {
       throw new ApiError(404, 'Link not found');
     }
 
-    const usersBrainContent = await Content.findById({
-      _id: link.userId,
-    });
+    // Fetch all content of the user who owns this public link
+    const usersBrainContent = await Content.find({ userId: link.userId });
 
-    if (!usersBrainContent) {
+    if (!usersBrainContent || usersBrainContent.length === 0) {
       throw new ApiError(404, 'Content not found');
     }
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, 'content fetched successfully', link));
+    return res.status(200).json(
+      new ApiResponse(200, 'Content fetched successfully', usersBrainContent)
+    );
   }
 );
