@@ -1,35 +1,46 @@
 import { ReactNode } from "react";
+import clsx from "clsx"; // Optional: Helps in managing conditional classes
 
 export interface IButton {
-  variant: "primary" | "secondary";
-  size: "sm" | "md" | "lg";
-  text: string;
-  icon: ReactNode;
-  onClick: () => void; //
+  variant?: "primary" | "secondary";
+  size?: "sm" | "md" | "lg";
+  children: ReactNode;
+  icon?: ReactNode;
+  className?: string;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const buttonVariants = {
-  primary: "bg-purple-600 text-white",
-  secondary: "bg-purple-300 text-purple-600",
+  primary: "bg-purple-600 text-white hover:bg-purple-700",
+  secondary: "bg-purple-300 text-purple-600 hover:bg-purple-400",
 };
 
-const defaultStyles = "rounded-md p-4 flex";
-
-const size = {
-  sm: "py-2 px-4",
-  md: "py-4 px-6",
-  lg: "py-6 px-8",
+const sizeClasses = {
+  sm: "py-2 px-4 text-sm",
+  md: "py-3 px-6 text-md",
+  lg: "py-4 px-8 text-lg",
 };
 
-export const Button = (props: IButton) => {
+export const Button = ({
+  variant = "primary",
+  size = "md",
+  children,
+  icon,
+  className = "",
+  onClick,
+}: IButton) => {
   return (
     <button
-      className={`${buttonVariants[props.variant]} ${defaultStyles} ${
-        size[props.size]
-      }`}
-      onClick={props.onClick}>
-
-      {props.icon ? <div className="pr-4 ">{props.icon}</div> : null} {props.text}
+      className={clsx(
+        "rounded-md flex items-center transition-all duration-300",
+        buttonVariants[variant],
+        sizeClasses[size],
+        className
+      )}
+      onClick={onClick}
+    >
+      {icon && <span className="mr-2">{icon}</span>}
+      {children}
     </button>
   );
 };

@@ -3,36 +3,18 @@ import { ShareIcon } from "./components/ui/ShareIcon";
 
 export default function App() {
   return (
-    <>
-      <Button
-        variant="primary"
-        size="sm"
-        text="MainBTN"
-        icon={<ShareIcon size="lg"/>}
-        onClick={() => {
-          console.log("hello");
-        }}
-      />
+    <div className="space-x-4">
+      <Button variant="primary" size="sm" icon={<ShareIcon size="sm" />}>
+        Small Button
+      </Button>
 
-      <Button
-        variant="primary"
-        size="md"
-        text="MainBTN"
-        icon="+"
-        onClick={() => {
-          console.log("hello");
-        }}
-      />
+      <Button variant="secondary" size="md" icon={<ShareIcon size="md" />}>
+        Medium Button
+      </Button>
 
-      <Button
-        variant="secondary"
-        size="lg"
-        text="MainBTN"
-        icon="+"
-        onClick={() => {
-          console.log("hello");
-        }}
-      />
-    </>
+      <Button variant="secondary" size="lg" icon={<ShareIcon size="lg" />}>
+        Large Button
+      </Button>
+    </div>
   );
 }

@@ -3,9 +3,9 @@ interface IShareIconProps {
 }
 
 const ShareIconVarients =  {
-    sm:"size-2",
-    md:"size-4",
-    lg:"size-6",
+    sm:"size-4",
+    md:"size-6",
+    lg:"size-8",
 }
 
 export const ShareIcon = (props:IShareIconProps) => {
