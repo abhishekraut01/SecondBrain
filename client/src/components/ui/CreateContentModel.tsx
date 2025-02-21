@@ -14,7 +14,10 @@ type FormData = {
   type: "youtube" | "instagram" | "twitter" | "facebook" | "artical" | "other";
 };
 
-export const CreateContentModel = ({ open, onClose }: CreateContentModelProps) => {
+export const CreateContentModel = ({
+  open,
+  onClose,
+}: CreateContentModelProps) => {
   const {
     register,
     handleSubmit,
@@ -34,7 +37,10 @@ export const CreateContentModel = ({ open, onClose }: CreateContentModelProps) =
       <div className="bg-white p-6 rounded-lg w-96 shadow-lg">
         {/* Close Button */}
         <div className="flex justify-end">
-          <button onClick={onClose} className="text-gray-600 hover:text-gray-800">
+          <button
+            onClick={onClose}
+            className="text-gray-600 hover:text-gray-800"
+          >
             <RxCross1 size={20} />
           </button>
         </div>
@@ -44,11 +50,13 @@ export const CreateContentModel = ({ open, onClose }: CreateContentModelProps) =
           {/* Link Input */}
           <input
             {...register("link", { required: "Link is required" })}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md mt-2"
             type="url"
             placeholder="Enter Link"
           />
-          {errors.link && <p className="text-red-500 text-sm">{errors.link.message}</p>}
+          {errors.link && (
+            <p className="text-red-500 text-sm">{errors.link.message}</p>
+          )}
 
           {/* Title Input */}
           <input
@@ -57,7 +65,9 @@ export const CreateContentModel = ({ open, onClose }: CreateContentModelProps) =
             type="text"
             placeholder="Enter Title"
           />
-          {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+          {errors.title && (
+            <p className="text-red-500 text-sm">{errors.title.message}</p>
+          )}
 
           {/* Description Input */}
           <textarea
@@ -79,11 +89,13 @@ export const CreateContentModel = ({ open, onClose }: CreateContentModelProps) =
             <option value="artical">Article</option>
             <option value="other">Other</option>
           </select>
-          {errors.type && <p className="text-red-500 text-sm">{errors.type.message}</p>}
+          {errors.type && (
+            <p className="text-red-500 text-sm">{errors.type.message}</p>
+          )}
 
           {/* Submit Button */}
           <div className="flex justify-center">
-            <Button variant="primary" size="md" >
+            <Button variant="primary" size="md">
               Submit
             </Button>
           </div>
