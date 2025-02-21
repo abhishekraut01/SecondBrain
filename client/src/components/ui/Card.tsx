@@ -45,19 +45,23 @@ const getEmbedComponent = (link: string | undefined, type: string) => {
 
   if (type === "twitter") {
     return (
-      <blockquote className="twitter-tweet">
-        <a href={link.replace("x.com", "twitter.com")}></a>
-      </blockquote>
+      <div className="rounded-md w-full">
+        <blockquote className="twitter-tweet">
+          <a href={link.replace("x.com", "twitter.com")}></a>
+        </blockquote>
+      </div>
     );
   }
 
   if (type === "instagram" && link.includes("instagram.com")) {
     return (
-      <blockquote
-        className="instagram-media w-full aspect-video rounded-md overflow-hidden"
-        data-instgrm-permalink={`${link}/?utm_source=ig_embed`}
-        data-instgrm-version="14"
-      ></blockquote>
+      <div className="rounded-md bg-slate-400 w-full">
+        <blockquote
+          className="instagram-media w-full aspect-video rounded-md overflow-hidden"
+          data-instgrm-permalink={`${link}/?utm_source=ig_embed`}
+          data-instgrm-version="14"
+        ></blockquote>
+      </div>
     );
   }
 
@@ -83,7 +87,7 @@ const GenericCard: React.FC<CardProps> = ({
   link,
 }) => {
   return (
-    <div className="bg-white p-4 rounded-2xl shadow-md w-80">
+    <div className=" p-4 rounded-2xl shadow-md w-80 max-h-96 overflow-y-scroll overflow-x-hidden scrollbar-hide">
       {/* Header */}
       <div className="flex justify-between items-center mb-2 text-gray-700">
         <div className="flex items-center gap-2 font-semibold">
