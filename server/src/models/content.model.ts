@@ -18,7 +18,7 @@ const contentSchema = new Schema<IContent>(
     type: {
       type: String,
       required: true,
-      enum: ['article', 'video', 'blog', 'other'], // Restrict to valid types
+      enum: ['youtube', 'instagram', 'twitter', 'facebook' , 'artical', 'other'], // Restrict to valid types
     },
     title: {
       type: String,
