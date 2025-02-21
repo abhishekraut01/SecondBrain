@@ -38,6 +38,7 @@ export const Button = ({
         className
       )}
       onClick={onClick}
+      type="submit"
     >
       {icon && <span className="mr-2">{icon}</span>}
       {children}
